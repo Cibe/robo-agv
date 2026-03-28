@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Speech from "expo-speech";
 import Voice from "@react-native-voice/voice";
 import { useRobotState } from "./src/useRobotState";
