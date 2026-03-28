@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-_model = genai.GenerativeModel("gemini-2.0-flash")
+_model = genai.GenerativeModel("gemini-3.0-flash")
 
 
 async def describe_room_image(base64_image: str, image_index: int = 0) -> str:

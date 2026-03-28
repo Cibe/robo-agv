@@ -50,7 +50,7 @@ _NAV_TOOLS = [
 ]
 
 _model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
+    model_name="gemini-3.0-flash",
     tools=_NAV_TOOLS,
     generation_config=genai.GenerationConfig(temperature=0.2)
 )

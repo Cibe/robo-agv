@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "RoboAGV",
+    "slug": "robo-agv",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#1565C0"
+    },
+    "android": {
+      "package": "com.roboagv.app",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "INTERNET"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.roboagv.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to capture room images and live frames for navigation.",
+        "NSMicrophoneUsageDescription": "Used for voice commands to control the robot."
+      }
+    }
+  }
+}
