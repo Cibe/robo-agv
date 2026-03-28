@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { Camera, CameraType, useCameraPermissions } from "expo-camera";
 import * as Speech from "expo-speech";
 import Voice from "@react-native-voice/voice";
 import { useRobotState } from "./src/useRobotState";
@@ -22,7 +22,7 @@ type Tab = "navigate" | "record";
 export default function App() {
   const [tab, setTab] = useState<Tab>("navigate");
   const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef<CameraView>(null);
+  const cameraRef = useRef<Camera>(null);
   const { state, setListening, addRoomImage, navigate, submitRoomRecording, reset } =
     useRobotState();
 
@@ -142,7 +142,7 @@ export default function App() {
       </View>
 
       {/* Camera preview */}
-      <CameraView ref={cameraRef} style={styles.camera} facing="back" />
+      <Camera ref={cameraRef} style={styles.camera} type={CameraType.back} />
 
       {/* Status */}
       <View style={styles.statusBox}>
