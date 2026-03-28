@@ -1,39 +1,39 @@
 # RoboAGV — AI-Powered Robot Navigation
 
-Voice-controlled robot navigation using **Gemini VLM + AI Memory + Agents** on Android.
+Voice-controlled robot navigation using **Gemini VLM + AI Memory + Agents** on mobile (React Native).
 
 ## How It Works
 
 ```
 Phase 0 — Record Room
-  Android captures room images (multiple angles)
+  App captures room images (multiple angles)
   → Gemini VLM analyzes each image → spatial descriptions stored in AI memory
 
 Phase 1 — Navigate
-  User speaks "go to microwave" on Android
+  User speaks "go to microwave"
   → Current camera frame captured
   → Gemini VLM describes current scene
   → Navigation Agent (Gemini function calling):
        queries memory agent → gets room layout context
        decides direction (forward / back / left / right / stop)
-  → Android speaks the result (TTS) + animates robot on screen
+  → App speaks the result (TTS) + animates robot on screen
 ```
 
 ## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     Android App                         │
+│                  React Native App (Expo)                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────┐ │
-│  │ CameraX      │  │SpeechRecognizer│ │  TextToSpeech │ │
-│  │ (live preview│  │ (voice input) │ │  (speaks cmd) │ │
+│  │ expo-camera  │  │  Voice STT   │  │  expo-speech  │ │
+│  │ (live preview│  │ (voice input)│  │  (speaks cmd) │ │
 │  │  + capture)  │  └──────┬───────┘ └───────────────┘ │
 │  └──────┬───────┘         │                            │
 │         │         ┌───────▼────────┐                   │
-│         └─────────►  RobotViewModel│                   │
-│                   │  (StateFlow)   │                   │
+│         └─────────►  useRobotState │                   │
+│                   │  (React hook)  │                   │
 │                   └───────┬────────┘                   │
-│                           │ Retrofit HTTP               │
+│                           │ fetch HTTP                  │
 └───────────────────────────┼────────────────────────────┘
                             │
 ┌───────────────────────────▼────────────────────────────┐
@@ -67,13 +67,14 @@ robo-agv/
 │   │   └── navigation_agent.py     # Gemini agentic loop (function calling)
 │   └── memory/
 │       └── store.py                # JSON-based room memory store
-└── android/                        # Android app (Kotlin)
-    └── app/src/main/java/com/roboagv/
-        ├── MainActivity.kt         # Main UI, camera, tab modes
-        ├── RobotViewModel.kt       # Business logic, API calls
-        ├── RobotView.kt            # Custom animated robot view
-        ├── VoiceController.kt      # SpeechRecognizer + TTS
-        └── ApiService.kt           # Retrofit API client
+└── mobile/                         # React Native app (Expo)
+    ├── App.tsx                     # Main UI, tabs, camera, voice, TTS
+    ├── app.json                    # Expo config (permissions, bundle ID)
+    ├── package.json
+    └── src/
+        ├── api.ts                  # Backend API client
+        ├── useRobotState.ts        # State management hook
+        └── RobotView.tsx           # Animated robot direction view
 ```
 
 ## Setup
@@ -91,13 +92,57 @@ python main.py
 # Server starts at http://0.0.0.0:8000
 ```
 
-### Android App
+### Mobile App
 
-**Requirements:** Android Studio, Android device (API 26+)
+**Requirements:** Node.js 18+, Android Studio (for Android), Xcode (for iOS)
 
-1. Open the `android/` folder in Android Studio
-2. Build and run on your device
-3. Tap the **settings icon** (top right) and enter your computer's local IP:
+#### Option A — Expo Go (fastest, no build needed)
+
+1. Install **Expo Go** on your phone:
+   - Android: [Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
+   - iPhone: [App Store](https://apps.apple.com/app/expo-go/id982107779)
+
+2. Start the dev server:
+   ```bash
+   cd mobile
+   npm install
+   npx expo start
+   ```
+
+3. Scan the QR code with Expo Go (Android) or your Camera app (iPhone).
+
+> Your phone and computer must be on the **same Wi-Fi network**.
+
+#### Option B — Run on Android via Android Studio (USB)
+
+1. **Enable Developer Mode** on your phone:
+   - Settings → About Phone → tap **Build Number** 7 times
+   - Settings → Developer Options → enable **USB Debugging**
+
+2. **Connect your phone** via USB cable and allow the connection prompt.
+
+3. **Set up Android SDK** environment variables (add to `~/.zshrc`):
+   ```bash
+   export ANDROID_HOME=$HOME/Library/Android/sdk
+   export PATH=$PATH:$ANDROID_HOME/emulator
+   export PATH=$PATH:$ANDROID_HOME/platform-tools
+   ```
+   Then run: `source ~/.zshrc`
+
+4. **Verify your device is detected:**
+   ```bash
+   adb devices
+   ```
+
+5. **Build and install the app:**
+   ```bash
+   cd mobile
+   npm install
+   npx expo run:android
+   ```
+   The app will be built, installed, and launched on your phone automatically.
+
+6. **Set the backend URL** — tap **⚙️** (top right) and enter your computer's local IP:
    ```
    http://192.168.x.x:8000
    ```
@@ -138,9 +183,11 @@ python main.py
 
 | Layer | Technology |
 |-------|-----------|
-| VLM (vision) | Google Gemini 2.0 Flash |
-| LLM + Agents | Google Gemini 2.0 Flash (function calling) |
+| VLM (vision) | Google Gemini 3.0 Flash |
+| LLM + Agents | Google Gemini 3.0 Flash (function calling) |
 | AI Memory | Gemini semantic search over JSON store |
 | Backend | Python FastAPI + Uvicorn |
-| Android | Kotlin + CameraX + SpeechRecognizer + TTS |
-| Networking | Retrofit2 + OkHttp |
+| Mobile | React Native (Expo) |
+| Voice Input | @react-native-voice/voice |
+| TTS | expo-speech |
+| Camera | expo-camera |
